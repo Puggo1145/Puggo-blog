@@ -1,11 +1,20 @@
 "use client"
+import Link from "next/link";
+
 import Logo from "./logo";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 
 import { useScrollTop } from "@/hooks/useScrollTop";
+
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/mode-toggle";
+import Spinner from "@/components/spinner";
+
+import { useConvexAuth } from "convex/react";
+import { SignInButton, UserButton } from "@clerk/clerk-react";
 
 const Navbar: React.FC = () => {
+    const { isAuthenticated, isLoading } = useConvexAuth();
     const scrolled = useScrollTop();
 
     return (
@@ -18,6 +27,29 @@ const Navbar: React.FC = () => {
                 flex items-center gap-x-2
                 md:justify-end justify-between
             ">
+                { isLoading && (
+                    <Spinner />
+                )}
+                {!isAuthenticated && !isLoading && (
+                    <>
+                        <SignInButton mode="modal">
+                            <Button variant="ghost" size="sm">Log in</Button>
+                        </SignInButton>
+                        <SignInButton mode="modal">
+                            <Button size="sm">Get Notion Free</Button>
+                        </SignInButton>
+                    </>
+                )}
+                {isAuthenticated && !isLoading && (
+                    <>
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href="/documents">Enter Notion</Link>
+                        </Button>
+                        <UserButton 
+                            afterSignOutUrl="/"
+                        />
+                    </>
+                )}
                 <ModeToggle />
             </div>
         </div>
