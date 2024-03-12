@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react'
 import Spinner from "@/components/spinner";
 
-import { useConvexAuth } from "convex/react";
-import { SignInButton } from "@clerk/clerk-react";
+import { useSession, signIn } from 'next-auth/react';
 
 const Heading: React.FC = () => {
-    const { isAuthenticated, isLoading } = useConvexAuth();
+    const { data: session } = useSession();
 
     return (
         <div className="max-w-3xl space-y-4">
@@ -22,7 +20,7 @@ const Heading: React.FC = () => {
                 Notion is the connected workspace where <br />
                 better, faster work happens.
             </h3>
-            {isLoading && (
+            {/* {isLoading && (
                 <div className="w-full flex items-center justify-center">
                     <Spinner size="lg" />
                 </div>
@@ -34,14 +32,14 @@ const Heading: React.FC = () => {
                         <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                 </Button>
-            )}
-            {!isAuthenticated && !isLoading && (
-                <SignInButton mode="modal">
-                    <Button>
+            )} */}
+            {!session && (
+                <Button asChild>
+                    <Link href="login">
                         Get Notion Free
                         <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                </SignInButton>
+                    </Link>
+                </Button>
             )}
         </div>
     );

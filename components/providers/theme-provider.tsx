@@ -1,3 +1,5 @@
+// 提供全局黑白主题切换功能
+
 "use client"
 
 import * as React from "react"

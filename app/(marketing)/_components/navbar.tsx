@@ -1,21 +1,20 @@
 "use client"
-import Link from "next/link";
 
 import Logo from "./logo";
-
-import { useScrollTop } from "@/hooks/useScrollTop";
-
-import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import Spinner from "@/components/spinner";
 
-import { useConvexAuth } from "convex/react";
-import { SignInButton, UserButton } from "@clerk/clerk-react";
+import { cn } from "@/lib/utils";
+import { useScrollTop } from "@/hooks/useScrollTop";
+
+import { signIn, useSession } from 'next-auth/react';
 
 const Navbar: React.FC = () => {
-    const { isAuthenticated, isLoading } = useConvexAuth();
     const scrolled = useScrollTop();
+
+    const { data: session } = useSession();
 
     return (
         <div className={cn(
@@ -27,20 +26,22 @@ const Navbar: React.FC = () => {
                 flex items-center gap-x-2
                 md:justify-end justify-between
             ">
-                { isLoading && (
+                {/* { isLoading && (
                     <Spinner />
-                )}
-                {!isAuthenticated && !isLoading && (
+                )} */}
+                {!session && (
                     <>
-                        <SignInButton mode="modal">
-                            <Button variant="ghost" size="sm">Log in</Button>
-                        </SignInButton>
-                        <SignInButton mode="modal">
-                            <Button size="sm">Get Notion Free</Button>
-                        </SignInButton>
+                        <Button variant="ghost" size="sm">
+                            <Link href="login">
+                                Log in
+                            </Link>
+                        </Button>
+                        {/* <Button size="sm">
+                            Get Notion Free
+                        </Button> */}
                     </>
                 )}
-                {isAuthenticated && !isLoading && (
+                {/* {isAuthenticated && !isLoading && (
                     <>
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/documents">Enter Notion</Link>
@@ -49,7 +50,7 @@ const Navbar: React.FC = () => {
                             afterSignOutUrl="/"
                         />
                     </>
-                )}
+                )} */}
                 <ModeToggle />
             </div>
         </div>
