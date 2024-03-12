@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const Footer: React.FC = () => {
   return (
-    <div className="flex items-center w-full p-6 bg-background z-50 dark:bg-darkbackground">
+    <div className="flex items-center w-full p-6 bg-background z-10 dark:bg-darkbackground">
         <Logo />
         <div className="
             md:ml-auto 

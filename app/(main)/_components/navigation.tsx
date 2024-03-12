@@ -4,8 +4,10 @@ import { ElementRef, useRef, useState, useEffect } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
 
-import { ChevronLeft, MenuIcon } from "lucide-react";
+import { ChevronsLeft, MenuIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import UserItem from "./user-item";
 
 const Navigation: React.FC = () => {
     const pathname = usePathname();
@@ -14,9 +16,11 @@ const Navigation: React.FC = () => {
     const isResizingRef = useRef(false);
     const sidebarRef = useRef<ElementRef<"aside">>(null);
     const navbarRef = useRef<ElementRef<"div">>(null);
-    const [isResetting, setIsResetting] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(isMobile);
 
+    const [isResetting, setIsResetting] = useState(false); // 鼠标按住缩放条时，标识是否正在进行缩放操作
+    const [isCollapsed, setIsCollapsed] = useState(isMobile); // 根据设备屏幕尺寸判断是否折叠侧边栏
+
+    // 屏幕宽度变化时，自动折叠侧边栏
     useEffect(() => {
         if (isMobile) {
             collapse();
@@ -31,6 +35,7 @@ const Navigation: React.FC = () => {
         }
     }, [pathname, isMobile]);
 
+    // 侧边栏缩放事件发送器：鼠标按住，启用对鼠标移动和鼠标松开的监听
     function handleMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         event?.preventDefault();
         event?.stopPropagation();
@@ -91,7 +96,7 @@ const Navigation: React.FC = () => {
         <>
             <aside 
                 ref={sidebarRef}
-                className={cn("group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-[99999]", 
+                className={cn("group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-10", 
                     isResetting && "transition-all ease-in-out duration-300",
                     isMobile && "w-0"
                 )}
@@ -99,14 +104,15 @@ const Navigation: React.FC = () => {
                 <div
                     onClick={collapse}
                     role="button"
-                    className={cn("h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
+                    className={cn(
+                        "h-6 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-2 right-2 opacity-0 group-hover/sidebar:opacity-100 transition",
                         isMobile && "opacity-100"
                     )}
                 >
-                    <ChevronLeft className="h-6 w-6" />
+                    <ChevronsLeft className="h-6 w-6" />
                 </div>
                 <div>
-                    <p>Action Items</p>
+                    <UserItem />
                 </div>
                 <div className="mt-4">
                     <p>Documents</p>
@@ -123,7 +129,7 @@ const Navigation: React.FC = () => {
             <div 
                 ref={navbarRef}
                 className={cn(
-                    "absolute top-0 z-[99999] left-60 w-[calc(100%-240px)]",
+                    "absolute top-0 z-10 left-60 w-[calc(100%-240px)]",
                     isResetting && "transition-all ease-in-out duration-300",
                     isMobile && "left-0 w-full"
                 )}

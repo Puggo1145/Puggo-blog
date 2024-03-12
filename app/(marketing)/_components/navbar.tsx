@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
 
     return (
         <div className={cn(
-            "z-50 bg-background dark:bg-darkbackground fixed top-0 flex items-center w-full p-6",
+            "z-10 bg-background dark:bg-darkbackground fixed top-0 flex items-center w-full p-6",
             scrolled && "border-b shadow-sm"
         )}>
             <Logo />
