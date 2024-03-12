@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import { Loader } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
@@ -19,12 +21,20 @@ const spinnerVariants = cva(
     }
 )
 
-interface SpinnerProps extends VariantProps<typeof spinnerVariants> {}
+interface SpinnerProps extends VariantProps<typeof spinnerVariants> { 
+    className?: string;
+    spinByDefault?: boolean;
+}
 
-const Spinner: React.FC<SpinnerProps> = ({size}) => {
-  return (
-    <Loader className={cn(spinnerVariants({ size }))}/>
-  );
+const useSpinner = ({ size, className, spinByDefault }: SpinnerProps) => {
+
+    const [loading, setLoading] = useState(() => spinByDefault ?? false);
+
+    return ({
+        loading: loading,
+        setLoading: setLoading,
+        dom: loading && <Loader className={cn(spinnerVariants({ size }), className)} />
+    });
 };
 
-export default Spinner;
+export default useSpinner;

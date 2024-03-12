@@ -4,17 +4,18 @@ import Logo from "./logo";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import Spinner from "@/components/spinner";
+import useSpinner from "@/components/spinner";
 
 import { cn } from "@/lib/utils";
 import { useScrollTop } from "@/hooks/useScrollTop";
 
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const Navbar: React.FC = () => {
     const scrolled = useScrollTop();
 
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
+    const { dom: spinnerElement } = useSpinner({ size: "default", spinByDefault: true });
 
     return (
         <div className={cn(
@@ -26,9 +27,7 @@ const Navbar: React.FC = () => {
                 flex items-center gap-x-2
                 md:justify-end justify-between
             ">
-                {/* { isLoading && (
-                    <Spinner />
-                )} */}
+                {status === "loading" && spinnerElement}
                 {!session && (
                     <>
                         <Button variant="ghost" size="sm">
@@ -41,16 +40,13 @@ const Navbar: React.FC = () => {
                         </Button> */}
                     </>
                 )}
-                {/* {isAuthenticated && !isLoading && (
+                {status === "authenticated" && (
                     <>
                         <Button variant="ghost" size="sm" asChild>
                             <Link href="/documents">Enter Notion</Link>
                         </Button>
-                        <UserButton 
-                            afterSignOutUrl="/"
-                        />
                     </>
-                )} */}
+                )}
                 <ModeToggle />
             </div>
         </div>

@@ -19,23 +19,25 @@ export const POST = async (req: NextRequest) => {
     const user = await User.findOne({ username: username });
     if (user && password) {
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
         if (isPasswordCorrect) {
-            return NextResponse.json(user, { status: 200 });
+            return NextResponse.json({ status: 200 });
         } else {
-            return NextResponse.json("Invalid username or password", { status: 401 });
+            return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
+        }
+    } else if (!user) {
+        const encryptedPassword = password ? await bcrypt.hash(password, 5) : null;
+
+        try {
+            const newUser = await User.create({
+                username,
+                password: encryptedPassword
+            });
+
+            return NextResponse.json(newUser, { status: 201 });
+        } catch (err) {
+            return NextResponse.json({ error: `error creating user: ${err}` }, { status: 500 });
         }
     }
 
-    const encryptedPassword = password ? await bcrypt.hash(password, 5) : null;
-
-    try {
-        const newUser = await User.create({
-            username,
-            password: encryptedPassword
-        });
-
-        return NextResponse.json(newUser, { status: 201 });
-    } catch (err: any) {
-        return NextResponse.json(`error creating user: ${err}`, { status: 500 });
-    };
 }

@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 
 import { redirect } from "next/navigation";
 
-import Spinner from "@/components/spinner";
+import useSpinner from "@/components/spinner";
 
 import Navigation from "./_components/navigation";
 

@@ -19,9 +19,9 @@ const handler = NextAuth({
                     headers: { "Content-Type": "application/json" }
                 });
 
-                const user = await res.json();
-
-                if (res.status && user) {
+                
+                if (res.status === 201 || res.status === 200) {
+                    const user = await res.json();
                     return user;
                 }
 

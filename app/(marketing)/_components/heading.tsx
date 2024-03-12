@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react'
-import Spinner from "@/components/spinner";
+import useSpinner from "@/components/spinner";
 
-import { useSession, signIn } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 const Heading: React.FC = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
+    const { dom: spinnerElement } = useSpinner({ size: "default", spinByDefault: true });
 
     return (
         <div className="max-w-3xl space-y-4">
@@ -20,19 +21,19 @@ const Heading: React.FC = () => {
                 Notion is the connected workspace where <br />
                 better, faster work happens.
             </h3>
-            {/* {isLoading && (
+            {status === "loading" && (
                 <div className="w-full flex items-center justify-center">
-                    <Spinner size="lg" />
+                    {spinnerElement}
                 </div>
             )}
-            {isAuthenticated && !isLoading && (
+            {status === "authenticated" && (
                 <Button asChild>
                     <Link href="/documents">
                         Enter Notion
                         <ArrowRight className="h-4 w-4 ml-2" />
                     </Link>
                 </Button>
-            )} */}
+            )}
             {!session && (
                 <Button asChild>
                     <Link href="login">
