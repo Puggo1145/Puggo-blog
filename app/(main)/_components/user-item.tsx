@@ -1,4 +1,5 @@
 "use client"
+
 import { ChevronsLeftRight } from "lucide-react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -9,8 +10,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+
+import { useSession, signOut } from "next-auth/react";
 
 const UserItem: React.FC = () => {
+
+    const { data } = useSession();
 
     return (
         <DropdownMenu>
@@ -18,10 +24,10 @@ const UserItem: React.FC = () => {
                 <div role="button" className="flex items-center text-sm p-3 w-full hover:bg-primary/5">
                     <div className="gap-x-2 flex items-center max-w-[150px]">
                         <Avatar className="h-5 w-5">
-                            {/* <AvatarImage src={user?.imageUrl}></AvatarImage> */}
+                            <AvatarImage src={data?.user?.image || "#"}></AvatarImage>
                         </Avatar>
                         <span className="text-start font-medium line-clamp-1">
-                            {/* {user?.fullName}&apos;s Notion */}
+                            {data?.user?.name}&apos;s Notion
                         </span>
                     </div>
                     <ChevronsLeftRight className="rotate-90 ml-2 text-muted-foreground h-4 w-4" />
@@ -40,12 +46,12 @@ const UserItem: React.FC = () => {
                         <div className="flex items-center gap-x-2">
                             <div className="rounded-md bg-secondary p-1">
                                 <Avatar className="h-8 w-8">
-                                    {/* <AvatarImage src={user?.imageUrl} /> */}
+                                    <AvatarImage src={data?.user?.image || "#"} />
                                 </Avatar>
                             </div>
                             <div className="space-y-1">
                                 <p className="text-sm line-clamp-1">
-                                    {/* {user?.fullName} */}
+                                    {data?.user?.name}
                                 </p>
                             </div>
                         </div>
@@ -53,7 +59,7 @@ const UserItem: React.FC = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="w-full cursor-pointer text-muted-foreground">
-                    {/* <SignOutButton>Log out</SignOutButton> */}
+                    <Button variant={"ghost"} onClick={() => signOut()}>Log out</Button>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

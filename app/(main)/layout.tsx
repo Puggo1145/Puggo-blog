@@ -8,19 +8,24 @@ import useSpinner from "@/components/spinner";
 
 import Navigation from "./_components/navigation";
 
+import { useSession } from "next-auth/react";
+
 const DocumentsMainLayout: React.FC<PropsWithChildren> = ({ children }) => {
 
-    // if (isLoading) {
-    //     return (
-    //         <div className="h-full flex items-center justify-center">
-    //             <Spinner size={"lg"} />
-    //         </div>
-    //     );
-    // }
+    const { status } = useSession();
+    const spinner = useSpinner({ size: "lg" });
 
-    // if (!isAuthenticated) {
-    //     return redirect("/");
-    // }
+    if (status === "loading") {
+        return (
+            <div className="h-full flex items-center justify-center">
+                {spinner.dom}
+            </div>
+        );
+    }
+
+    if (status === "unauthenticated") {
+        return redirect("/");
+    }
 
     return (
         <div className="h-full flex dark:bg-[#1f1f1f]">

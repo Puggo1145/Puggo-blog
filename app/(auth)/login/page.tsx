@@ -87,8 +87,6 @@ const Login: React.FC = () => {
         })
 
         if (res?.ok) {
-            console.log(res);
-
             toast.success("Logged in successfully");
             setTimeout(() => router.push("/"), 1000);
         } else {

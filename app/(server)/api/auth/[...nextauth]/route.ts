@@ -1,8 +1,9 @@
 import NextAuth from "next-auth/next";
 import GithubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { AuthOptions } from "next-auth";
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
     secret: process.env.SECRET,
     providers: [
         CredentialsProvider({
@@ -19,16 +20,36 @@ const handler = NextAuth({
                     headers: { "Content-Type": "application/json" }
                 });
 
-                
                 if (res.status === 201 || res.status === 200) {
                     const user = await res.json();
-                    return user;
+
+                    return {
+                        id: user._id,
+                        name: user.username,
+                        image: user.avatar
+                    };
+                } else {
+                    return null;
                 }
-
-                return null;
-            }
+            },
         })
-    ]
-})
+    ],
+    callbacks: {
+        async jwt({token, user}) {
+            if (user) {
+                token.id = user.id;
+            }
 
+            return token;
+        },
+        async session({session, token}) {
+            // @ts-ignore
+            session.user!.id = token.id;
+
+            return session;
+        }
+    }
+}
+
+const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };

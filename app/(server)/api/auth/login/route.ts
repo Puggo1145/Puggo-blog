@@ -21,7 +21,7 @@ export const POST = async (req: NextRequest) => {
         const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
         if (isPasswordCorrect) {
-            return NextResponse.json({ status: 200 });
+            return NextResponse.json(user, { status: 200 });
         } else {
             return NextResponse.json({ error: "Invalid username or password" }, { status: 401 });
         }
@@ -39,5 +39,4 @@ export const POST = async (req: NextRequest) => {
             return NextResponse.json({ error: `error creating user: ${err}` }, { status: 500 });
         }
     }
-
 }
