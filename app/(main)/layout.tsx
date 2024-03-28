@@ -2,12 +2,10 @@
 
 import { PropsWithChildren } from "react";
 
-import { redirect } from "next/navigation";
-
 import useSpinner from "@/components/spinner";
-
 import Navigation from "./_components/navigation";
 
+import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const DocumentsMainLayout: React.FC<PropsWithChildren> = ({ children }) => {
