@@ -88,7 +88,7 @@ const Login: React.FC = () => {
 
         if (res?.ok) {
             toast.success("Logged in successfully");
-            setTimeout(() => router.push("/"), 1000);
+            router.push("/");
         } else {
             toast.error("Invalid username or password");
             form.setError("password", { message: "Invalid username or password" });

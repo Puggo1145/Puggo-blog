@@ -1,9 +1,11 @@
 import { Schema, model, models } from "mongoose";
+import type { Document } from "@/types/document";
 
-const documentSchema = new Schema({
+const documentSchema = new Schema<Document>({
     title: {
         type: String,
-        required: true
+        required: true,
+        default: 'untitiled'
     },
     user_id: {
         type: String,
@@ -35,7 +37,7 @@ const documentSchema = new Schema({
         required: true,
         default: false
     },
-});
+}, { timestamps: true });
 
 const Document = models.Document || model("Document", documentSchema);
 

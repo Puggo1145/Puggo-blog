@@ -1,15 +1,63 @@
 "use client"
 
+// shadcn components
+import { ChevronsLeft, MenuIcon, PlusCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+// components
+import UserItem from "./user-item";
+import Item from "./item";
+// hooks
 import { ElementRef, useRef, useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
-
-import { ChevronsLeft, MenuIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-import UserItem from "./user-item";
+import useDocuments from "@/stores/documents";
+import useSpinner from "@/components/spinner";
 
 const Navigation: React.FC = () => {
+    // Fn - get documents
+    const { documents, setDocuments } = useDocuments();
+    const { dom: spinner, loading, setLoading } = useSpinner({ size: "default" });
+    const { data: session } = useSession();
+
+    async function getDocuments() {
+        const res = await fetch("/api/documents");
+
+        if (res.ok) {
+            const documents = await res.json();
+            setDocuments(documents);
+        } else {
+            toast.error("Failed to fetch documents");
+        }
+    };
+
+    async function createDocument() {
+        const res = await fetch("/api/documents", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ user_id: session?.user?.id })
+        });
+
+        if (res.ok) {
+            const { document } = await res.json();
+            setDocuments([...documents, document]);
+            toast.success("document created");
+        } else {
+            toast.error("Failed to create document");
+        }
+    }
+
+    useEffect(() => {
+        setLoading(true);
+        getDocuments()
+            .finally(() => setLoading(false));
+    }, []);
+
+
+    // Fn - navigation bar collapse
     const pathname = usePathname();
     const isMobile = useMediaQuery("(max-width: 768px)");
 
@@ -39,7 +87,7 @@ const Navigation: React.FC = () => {
     function handleMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
         event?.preventDefault();
         event?.stopPropagation();
-    
+
         isResizingRef.current = true;
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseup", handleMouseUp);
@@ -49,7 +97,7 @@ const Navigation: React.FC = () => {
         if (!isResizingRef.current) return;
 
         let newWidth = event.clientX;
-        
+
         if (newWidth < 240) newWidth = 240;
         if (newWidth > 480) newWidth = 480;
 
@@ -94,9 +142,9 @@ const Navigation: React.FC = () => {
 
     return (
         <>
-            <aside 
+            <aside
                 ref={sidebarRef}
-                className={cn("group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-10", 
+                className={cn("group/sidebar h-full bg-secondary overflow-y-auto relative flex flex-col w-60 z-10",
                     isResetting && "transition-all ease-in-out duration-300",
                     isMobile && "w-0"
                 )}
@@ -113,20 +161,41 @@ const Navigation: React.FC = () => {
                 </div>
                 <div>
                     <UserItem />
+                    <Item label="New Page" icon={PlusCircle} onClick={createDocument} />
                 </div>
-                <div className="mt-4">
-                    <p>Documents</p>
-                </div>
-                <div 
+
+                {/* Documents */}
+                <section className="mt-4 pl-4">
+                    {
+                        documents.length === 0 && !loading && (
+                            <p className="text-secondary-foreground">
+                                No documents
+                            </p>
+                        )
+                    }
+                    {
+                        documents.length !== 0 &&
+                        documents.map(({ title }) => {
+                            return (
+                                <p>{title}</p>
+                            )
+                        })
+                    }
+                    {
+                        loading && spinner
+                    }
+                </section>
+
+                <div
                     onMouseDown={handleMouseDown}
                     onClick={resetWidth}
                     className="opacity-0 group-hover/sidebar:opacity-100
                     transition cursor-ew-resize h-full w-1 
                     absolute right-0 top-0
-                    bg-primary/10" 
+                    bg-primary/10"
                 />
             </aside>
-            <div 
+            <div
                 ref={navbarRef}
                 className={cn(
                     "absolute top-0 z-10 left-60 w-[calc(100%-240px)]",

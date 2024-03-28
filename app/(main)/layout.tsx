@@ -1,15 +1,15 @@
 "use client"
 
-import { PropsWithChildren } from "react";
-
-import useSpinner from "@/components/spinner";
+// components
 import Navigation from "./_components/navigation";
-
-import { redirect } from "next/navigation";
+// hooks
+import useSpinner from "@/components/spinner";
 import { useSession } from "next-auth/react";
+// types
+import type { PropsWithChildren } from "react";
 
 const DocumentsMainLayout: React.FC<PropsWithChildren> = ({ children }) => {
-
+    // Fn - page loading status
     const { status } = useSession();
     const spinner = useSpinner({ size: "lg" });
 
@@ -20,10 +20,7 @@ const DocumentsMainLayout: React.FC<PropsWithChildren> = ({ children }) => {
             </div>
         );
     }
-
-    if (status === "unauthenticated") {
-        return redirect("/");
-    }
+    
 
     return (
         <div className="h-full flex dark:bg-[#1f1f1f]">
