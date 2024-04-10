@@ -3,7 +3,15 @@ import {
     POST 
 } from "@/utils/request";
 
-export const getDocuments = async () => await GET("/api/documents");
+export const getDocuments = async (
+    parentDocument?: string | null
+) => {
+    if (!parentDocument) {
+        return await GET("/api/documents")
+    }
+
+    return await GET(`/api/documents?parentDocument=${parentDocument}`)
+}
 
 export const createDocument = async (
     user_id: string

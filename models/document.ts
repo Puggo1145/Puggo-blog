@@ -1,14 +1,14 @@
 import { Schema, model, models } from "mongoose";
 import type { Document } from "@/types/document";
 
-const documentSchema = new Schema<Document>({
+const documentSchema = new Schema({
     title: {
         type: String,
         required: true,
         default: 'untitiled'
     },
     user_id: {
-        type: String,
+        type: Schema.Types.ObjectId,
         required: true
     },
     isArchived: {
@@ -18,7 +18,8 @@ const documentSchema = new Schema<Document>({
     },
     parentDocument: {
         type: String,
-        required: false
+        required: false,
+        default: null
     },
     content: {
         type: String,
@@ -30,7 +31,8 @@ const documentSchema = new Schema<Document>({
     },
     icon: {
         type: String,
-        required: false
+        required: false,
+        default: null
     },
     isPublished: {
         type: Boolean,
@@ -39,6 +41,8 @@ const documentSchema = new Schema<Document>({
     },
 }, { timestamps: true });
 
-const Document = models.Document || model("Document", documentSchema);
+documentSchema.index({ user_id: 1, parentDocument: 1 });
 
+
+const Document = models.Document || model("Document", documentSchema);
 export default Document;

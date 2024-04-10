@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, type LucideIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Props {
     id?: string;
@@ -16,7 +17,7 @@ interface Props {
     icon: LucideIcon
 }
 
-const Item: React.FC<Props> = ({
+const Item = ({
     id,
     label,
     icon: Icon,
@@ -25,12 +26,10 @@ const Item: React.FC<Props> = ({
     documentIcon,
     isSearch,
     level = 0,
-    onExpand,
+    // onExpand,
     expanded,
-}) => {
+}: Props) => {
     const ChevronIcon = expanded ? ChevronDown : ChevronRight;
-
-
 
     return (
         <div
@@ -79,5 +78,19 @@ const Item: React.FC<Props> = ({
         </div>
     );
 };
+
+Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
+    return (
+        <div
+            style={{
+                paddingLeft: level ? `${(level * 12) + 12}px` : "12px"
+            }}
+            className="flex gap-x-2 py-[3px]"
+        >
+            <Skeleton className="size-4"/>
+            <Skeleton className="size-4 w-[30%]"/>
+        </div>
+    )
+}
 
 export default Item;

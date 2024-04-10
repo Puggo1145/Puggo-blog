@@ -13,6 +13,7 @@ import { toast } from "sonner";
 // components
 import UserItem from "./user-item";
 import Item from "./item";
+import DocumentList from "./document-list";
 // hooks
 import {
     ElementRef,
@@ -25,28 +26,14 @@ import { useSession } from "next-auth/react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
 import useDocuments from "@/stores/documents";
-import useSpinner from "@/components/spinner";
 // apis
-import {
-    getDocuments,
-    createDocument
-} from "@/routes/documents";
+import { createDocument } from "@/routes/documents";
 
 const Navigation: React.FC = () => {
     // Fn - get documents
     const { documents, setDocuments } = useDocuments();
-    const { Spinner, loading, setLoading } = useSpinner();
     const { data: session } = useSession();
     const user_id = useMemo(() => session?.user.id, [session]);
-
-    async function getDoc() {
-        const res = await getDocuments();
-
-        if (res.ok) {
-            const documents = await res.json();
-            setDocuments(documents);
-        }
-    }
 
     async function createDoc() {
         const res = await createDocument(user_id!)
@@ -57,13 +44,6 @@ const Navigation: React.FC = () => {
             toast.success("document created");
         }
     }
-
-    useEffect(() => {
-        setLoading(true);
-        getDoc()
-            .finally(() => setLoading(false));
-    }, []);
-
 
     // Fn - navigation bar collapse
     const pathname = usePathname();
@@ -188,26 +168,8 @@ const Navigation: React.FC = () => {
                 </div>
 
                 {/* Documents */}
-                <section className="mt-4 pl-4">
-                    {
-                        !documents &&
-                        loading && <Spinner size="default" />
-                    }
-                    {
-                        documents.length === 0 && (
-                            <p className="text-secondary-foreground">
-                                No documents
-                            </p>
-                        )
-                    }
-                    {
-                        documents.length !== 0 &&
-                        documents.map(({ title }) => {
-                            return (
-                                <p key={title}>{title}</p>
-                            )
-                        })
-                    }
+                <section className="mt-4">
+                    <DocumentList />
                 </section>
 
                 <div

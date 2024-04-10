@@ -7,7 +7,7 @@ interface ProviderProps {
     children: React.ReactNode;
 }
 
-const NextAuthProvider: React.FC<ProviderProps> = async ({ session, children }) => {
+const NextAuthProvider: React.FC<ProviderProps> = ({ session, children }) => {
     return (
         <SessionProvider session={session}>
             {children}

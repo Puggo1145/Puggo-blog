@@ -56,7 +56,12 @@ const DocumentsPage: React.FC = () => {
         {/* Welcome to {user?.firstName}&apos;s Notion */}
       </h2>
       <Button onClick={createDoc} disabled={loading} >
-        {loading ? <Spinner size="default" className="mr-2" /> : <CirclePlus className="h-4 w-4 mr-2" />}
+        {
+          loading ?
+            <Spinner size="default" className="mr-2" />
+            :
+            <CirclePlus className="h-4 w-4 mr-2" />
+        }
         Create a note
       </Button>
     </div>

@@ -5,15 +5,21 @@ import User from '@/models/user';
 
 // 注册和登录是自动完成的
 export const POST = async (req: NextRequest) => {
-    const { username } = await req.json() as {username: string};
-
-    await connectToDB();
-
-    const doesUserExists = await User.exists({ username: username });
+    try {
+        const { username } = await req.json() as {username: string};
     
-    if (doesUserExists) {
-        return NextResponse.json({ onRegister: false }, { status: 200 });
+        await connectToDB();
+    
+        const doesUserExists = await User.exists({ username: username });
+        
+        if (doesUserExists) {
+            return NextResponse.json({ onRegister: false }, { status: 200 });
+        }
+    
+        return NextResponse.json({ onRegister: true }, { status: 200 });
+    } catch (err) {
+        if (err instanceof Error) {
+            return NextResponse.json({ error: err.message }, { status: 500 });
+        }
     }
-
-    return NextResponse.json({ onRegister: true }, { status: 200 });
 }
