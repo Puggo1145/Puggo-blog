@@ -13,7 +13,7 @@ const Logo: React.FC = () => {
     <div className="hidden md:flex items-center gap-x-4">
         <Image src="/logo.svg" width="40" height="40" alt="Logo" className="dark:hidden"/>
         <Image src="/logo-dark.svg" width="40" height="40" alt="Logo" className="hidden dark:block"/>
-        <p className={cn("font-semibold", font.className)}>Notion</p>
+        <p className={cn("font-semibold whitespace-nowrap", font.className)}>Puggo Blog</p>
     </div>
   );
 };

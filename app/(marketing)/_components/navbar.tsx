@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
                 {status === "authenticated" && (
                     <>
                         <Button variant="ghost" size="sm" asChild>
-                            <Link href="/documents">Enter Notion</Link>
+                            <Link href="/documents">Enter Blog Editor</Link>
                         </Button>
                     </>
                 )}

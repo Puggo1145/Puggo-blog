@@ -28,7 +28,7 @@ const RegisterCheckDialog: React.FC<{ open: boolean }> = ({ open }) => {
                     <DialogTitle>Want to register?</DialogTitle>
                     <DialogClose onClick={() => setIsOpen(false)} />
                     <DialogDescription>
-                        It looks like you do not have an account yet. Click again to register.
+                        It looks like you do not have an account yet. Click sign up button again to register after closing this window.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter className="mt-2">

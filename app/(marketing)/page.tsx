@@ -4,10 +4,11 @@ import Footer from "./_components/footer";
 
 export default function Home() {
   return (
-    <div className="min-h-full flex flex-col">
+    <div className="w-full min-h-full flex flex-col">
       <div className="
-        flex flex-col items-center justify-center 
-        md:justify-start text-center gap-y-8 flex-1 px-6 pb-10
+        m-auto max-w-[1440px] w-full
+        flex flex-col md:flex-row items-center gap-12
+        md:justify-start flex-1 px-4 md:px-8
       ">
         <Heading />
         <Heroes />

@@ -5,7 +5,7 @@ const MarketingLayout: React.FC<PropsWithChildren> = ({ children }) => {
     return (
         <div className="h-full dark:bg-darkbackground">
             <Navbar />
-            <main className="h-full pt-40">
+            <main className="h-full pt-24">
                 {children}
             </main>
         </div>
