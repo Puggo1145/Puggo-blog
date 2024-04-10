@@ -33,6 +33,9 @@ import { toast } from 'sonner'
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+// apis
+import { checkUser } from "@/routes/auth";
+
 const FormSchema = z.object({
     username: z.string().min(2, {
         message: "Username must be at least 2 characters long"
@@ -45,7 +48,7 @@ const FormSchema = z.object({
 const Login: React.FC = () => {
 
     const router = useRouter();
-    const { loading, setLoading, dom: spinnerElement } = useSpinner({ size: "default", className: "mr-2" });
+    const { loading, setLoading, Spinner } = useSpinner();
     const [doesUserExists, setDoesUserExists] = useState(false);
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -61,20 +64,15 @@ const Login: React.FC = () => {
         if (!doesUserExists) {
             setLoading(true);
 
-            const checkUserRes = await fetch("/api/auth/check-user", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username: data.username })
-            })
+            const checkUserRes = await checkUser(data.username);
 
-            if (!checkUserRes.ok) {
+            const { onResgister } = await checkUserRes.json();
+
+            if (onResgister) {
                 setLoading(false);
 
                 return setDoesUserExists(true);
             }
-
         }
 
         const { username, password } = data;
@@ -138,7 +136,7 @@ const Login: React.FC = () => {
                                 )}
                             />
                             <Button className="w-full" type="submit" disabled={loading}>
-                                {spinnerElement}
+                                <Spinner size="default" className="mr-2" />
                                 Continue with username
                             </Button>
                         </Form>
@@ -147,7 +145,7 @@ const Login: React.FC = () => {
                 <Separator className="px-2">or continue with</Separator>
                 <CardFooter className="pt-6">
                     <Button variant="outline" className="w-full" disabled={loading}>
-                        {spinnerElement}
+                        <Spinner size="default" className="mr-2" />
                         <GitHubLogoIcon className="mr-2" />
                         Github
                     </Button>

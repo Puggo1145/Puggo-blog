@@ -23,17 +23,22 @@ const spinnerVariants = cva(
 
 interface SpinnerProps extends VariantProps<typeof spinnerVariants> { 
     className?: string;
-    spinByDefault?: boolean;
 }
 
-const useSpinner = ({ size, className, spinByDefault }: SpinnerProps) => {
+const useSpinner = () => {
 
-    const [loading, setLoading] = useState(() => spinByDefault ?? false);
+    const [loading, setLoading] = useState(false);
+
+    const Spinner = ({ size, className }: SpinnerProps) => {
+        return (
+            <Loader className={cn(spinnerVariants({ size }), className)} />
+        );
+    }
 
     return ({
-        loading: loading,
-        setLoading: setLoading,
-        dom: loading && <Loader className={cn(spinnerVariants({ size }), className)} />
+        Spinner,
+        loading,
+        setLoading,
     });
 };
 

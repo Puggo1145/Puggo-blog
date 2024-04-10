@@ -1,58 +1,66 @@
 "use client"
 
 // shadcn components
-import { ChevronsLeft, MenuIcon, PlusCircle } from "lucide-react";
+import { 
+    ChevronsLeft, 
+    MenuIcon, 
+    PlusCircle, 
+    Search, 
+    Settings 
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 // components
 import UserItem from "./user-item";
 import Item from "./item";
 // hooks
-import { ElementRef, useRef, useState, useEffect } from "react";
+import {
+    ElementRef,
+    useRef,
+    useState,
+    useEffect,
+    useMemo
+} from "react";
 import { useSession } from "next-auth/react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
 import useDocuments from "@/stores/documents";
 import useSpinner from "@/components/spinner";
+// apis
+import {
+    getDocuments,
+    createDocument
+} from "@/routes/documents";
 
 const Navigation: React.FC = () => {
     // Fn - get documents
     const { documents, setDocuments } = useDocuments();
-    const { dom: spinner, loading, setLoading } = useSpinner({ size: "default" });
+    const { Spinner, loading, setLoading } = useSpinner();
     const { data: session } = useSession();
+    const user_id = useMemo(() => session?.user.id, [session]);
 
-    async function getDocuments() {
-        const res = await fetch("/api/documents");
+    async function getDoc() {
+        const res = await getDocuments();
 
         if (res.ok) {
             const documents = await res.json();
             setDocuments(documents);
-        } else {
-            toast.error("Failed to fetch documents");
         }
-    };
+    }
 
-    async function createDocument() {
-        const res = await fetch("/api/documents", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ user_id: session?.user?.id })
-        });
+    async function createDoc() {
+        const res = await createDocument(user_id!)
 
         if (res.ok) {
             const { document } = await res.json();
             setDocuments([...documents, document]);
             toast.success("document created");
-        } else {
-            toast.error("Failed to create document");
         }
     }
 
     useEffect(() => {
         setLoading(true);
-        getDocuments()
+        getDoc()
             .finally(() => setLoading(false));
     }, []);
 
@@ -161,13 +169,32 @@ const Navigation: React.FC = () => {
                 </div>
                 <div>
                     <UserItem />
-                    <Item label="New Page" icon={PlusCircle} onClick={createDocument} />
+                    <Item
+                        label="Search"
+                        icon={Search}
+                        isSearch
+                        onClick={() => {}}
+                    />
+                    <Item
+                        label="Settings"
+                        icon={Settings}
+                        onClick={() => {}}
+                    />
+                    <Item
+                        label="New Page"
+                        icon={PlusCircle}
+                        onClick={createDoc}
+                    />
                 </div>
 
                 {/* Documents */}
                 <section className="mt-4 pl-4">
                     {
-                        documents.length === 0 && !loading && (
+                        !documents &&
+                        loading && <Spinner size="default" />
+                    }
+                    {
+                        documents.length === 0 && (
                             <p className="text-secondary-foreground">
                                 No documents
                             </p>
@@ -177,12 +204,9 @@ const Navigation: React.FC = () => {
                         documents.length !== 0 &&
                         documents.map(({ title }) => {
                             return (
-                                <p>{title}</p>
+                                <p key={title}>{title}</p>
                             )
                         })
-                    }
-                    {
-                        loading && spinner
                     }
                 </section>
 

@@ -4,12 +4,17 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react'
 import useSpinner from "@/components/spinner";
-
+// hooks
+import { useEffect } from "react";
 import { useSession } from 'next-auth/react';
 
 const Heading: React.FC = () => {
     const { data: session, status } = useSession();
-    const { dom: spinnerElement } = useSpinner({ size: "default", spinByDefault: true });
+    const { setLoading, Spinner } = useSpinner();
+    
+    useEffect(() => {
+        setLoading(true);
+    }, []);
 
     return (
         <div className="flex flex-col items-start gap-y-4">
@@ -22,7 +27,7 @@ const Heading: React.FC = () => {
             </h3>
             {status === "loading" && (
                 <div className="w-full flex items-center justify-center">
-                    {spinnerElement}
+                    <Spinner />
                 </div>
             )}
             <div className="mt-12">

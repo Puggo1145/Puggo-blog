@@ -11,12 +11,12 @@ import type { PropsWithChildren } from "react";
 const DocumentsMainLayout: React.FC<PropsWithChildren> = ({ children }) => {
     // Fn - page loading status
     const { status } = useSession();
-    const spinner = useSpinner({ size: "lg" });
+    const { Spinner } = useSpinner();
 
     if (status === "loading") {
         return (
             <div className="h-full flex items-center justify-center">
-                {spinner.dom}
+                <Spinner />
             </div>
         );
     }

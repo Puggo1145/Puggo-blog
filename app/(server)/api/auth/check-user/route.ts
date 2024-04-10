@@ -12,8 +12,8 @@ export const POST = async (req: NextRequest) => {
     const doesUserExists = await User.exists({ username: username });
     
     if (doesUserExists) {
-        return NextResponse.json("go login", { status: 200 });
+        return NextResponse.json({ onRegister: false }, { status: 200 });
     }
 
-    return NextResponse.json({ error: "unexisted user" }, { status: 401 });
+    return NextResponse.json({ onRegister: true }, { status: 200 });
 }

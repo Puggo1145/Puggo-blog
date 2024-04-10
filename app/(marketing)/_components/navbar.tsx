@@ -10,12 +10,17 @@ import { cn } from "@/lib/utils";
 import { useScrollTop } from "@/hooks/useScrollTop";
 
 import { useSession } from 'next-auth/react';
+import { useEffect } from "react";
 
 const Navbar: React.FC = () => {
     const scrolled = useScrollTop();
 
     const { data: session, status } = useSession();
-    const { dom: spinnerElement } = useSpinner({ size: "default", spinByDefault: true });
+    const { Spinner, loading, setLoading } = useSpinner();
+
+    useEffect(() => {
+        setLoading(status === "loading");
+    }, [status]);
 
     return (
         <div className={cn(
@@ -27,7 +32,7 @@ const Navbar: React.FC = () => {
                 flex items-center gap-x-2
                 md:justify-end justify-between
             ">
-                {status === "loading" && spinnerElement}
+                {loading && <Spinner size="default" />}
                 {!session && (
                     <>
                         <Button variant="ghost" size="sm">

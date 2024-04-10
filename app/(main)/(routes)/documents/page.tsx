@@ -8,25 +8,21 @@ import { toast } from "sonner";
 // hooks
 import { useSession } from "next-auth/react";
 import useDocuments from "@/stores/documents";
+// apis
+import { createDocument } from "@/routes/documents";
 
 const DocumentsPage: React.FC = () => {
 
   const { data: session } = useSession();
   const { documents, setDocuments } = useDocuments();
-  const { dom: spinner, loading, setLoading } = useSpinner({ size: "lg" });
+  const { Spinner, loading, setLoading } = useSpinner();
 
-  async function createDocument() {
+  async function createDoc() {
     const user_id = session?.user.id;
 
     setLoading(true);
 
-    const res = await fetch("/api/documents", {
-      method: "POST",
-      body: JSON.stringify({ user_id }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    const res = await createDocument(user_id!);
 
     if (res.ok) {
       const { document } = await res.json();
@@ -59,8 +55,8 @@ const DocumentsPage: React.FC = () => {
       <h2 className="text-lg font-medium">
         {/* Welcome to {user?.firstName}&apos;s Notion */}
       </h2>
-      <Button onClick={createDocument} disabled={loading} >
-        {loading ? spinner : <CirclePlus className="h-4 w-4 mr-2" />}
+      <Button onClick={createDoc} disabled={loading} >
+        {loading ? <Spinner size="default" className="mr-2" /> : <CirclePlus className="h-4 w-4 mr-2" />}
         Create a note
       </Button>
     </div>

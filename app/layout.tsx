@@ -12,8 +12,8 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Notion",
-  description: "All your notes in one place",
+  title: "Puggo Blog",
+  description: "Make Development Awesome, Elegant, and Fun",
   icons: {
     icon: [
       {
@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             disableTransitionOnChange
             storageKey="notion-theme-2"
           >
-            <Toaster position="bottom-center" />
+            <Toaster position="top-center" />
             {children}
           </ThemeProvider>
         </SessionProvider>
