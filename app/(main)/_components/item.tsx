@@ -1,13 +1,22 @@
 "use client"
 
 import { cn } from "@/lib/utils";
-import { ChevronDown, ChevronRight, type LucideIcon } from "lucide-react";
+import { 
+    type LucideIcon,
+    ChevronDown, 
+    ChevronRight, 
+    Plus,
+} from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-// types
-import { MouseEvent } from "react";
+// hooks
+import { useRouter } from "next/navigation";
+// utils
+import { toast } from "sonner";
+// apis
+import { createDocument } from "@/routes/documents";
 
 interface Props {
-    id?: string;
+    id?: string; // parent document id
     documentIcon?: string;
     active?: boolean;
     expanded?: boolean;
@@ -31,9 +40,31 @@ const Item = ({
     onExpand,
     expanded,
 }: Props) => {
-    const handleExpand = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+    const router = useRouter();
+
+
+    const handleExpand = (event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
         event.stopPropagation();
         onExpand?.();
+    }
+
+    const onCreate = async (event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+        event.stopPropagation();
+
+        if (!id) return;
+
+        const res = await createDocument(id);
+        if (res.ok) {
+            const documentId = await res.json();
+
+            if (!expanded) onExpand?.()
+
+            // router.push(`/documents/${documentId}`);
+            PubSub.publish("refresh-documents-list");            
+            toast.success("Document created");
+        } else {
+            toast.error("Failed to create document");
+        }
     }
 
     const ChevronIcon = expanded ? ChevronDown : ChevronRight;
@@ -82,6 +113,18 @@ const Item = ({
                     <span className="text-xs">⌘ </span>K
                 </kbd>
             )}
+            {id && (
+                <div className="ml-auto flex items-center gap-x-2">
+                    <div 
+                        role="button"
+                        onClick={onCreate}
+                        className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm
+                        hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                    >
+                        <Plus className="size-4 text-muted-foreground"/>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
@@ -94,8 +137,8 @@ Item.Skeleton = function ItemSkeleton({ level }: { level?: number }) {
             }}
             className="flex gap-x-2 py-[3px]"
         >
-            <Skeleton className="size-4"/>
-            <Skeleton className="size-4 w-[30%]"/>
+            <Skeleton className="size-4 bg-muted-foreground/50"/>
+            <Skeleton className="size-4 w-[30%] bg-muted-foreground/50"/>
         </div>
     )
 }

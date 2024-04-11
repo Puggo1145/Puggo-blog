@@ -20,27 +20,19 @@ import {
     useRef,
     useState,
     useEffect,
-    useMemo
 } from "react";
-import { useSession } from "next-auth/react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
-import useDocuments from "@/stores/documents";
 // apis
 import { createDocument } from "@/routes/documents";
 
 const Navigation: React.FC = () => {
     // Fn - get documents
-    const { documents, setDocuments } = useDocuments();
-    const { data: session } = useSession();
-    const user_id = useMemo(() => session?.user.id, [session]);
-
     async function createDoc() {
-        const res = await createDocument(user_id!)
+        const res = await createDocument()
 
         if (res.ok) {
-            const { document } = await res.json();
-            setDocuments([...documents, document]);
+            PubSub.publish("refresh-documents-list");
             toast.success("document created");
         }
     }

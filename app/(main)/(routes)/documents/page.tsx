@@ -5,30 +5,22 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import useSpinner from "@/components/spinner";
 import { toast } from "sonner";
-// hooks
-import { useSession } from "next-auth/react";
-import useDocuments from "@/stores/documents";
 // apis
 import { createDocument } from "@/routes/documents";
+// utils
+import PubSub from "pubsub-js";
 
 const DocumentsPage: React.FC = () => {
-
-  const { data: session } = useSession();
-  const { documents, setDocuments } = useDocuments();
   const { Spinner, loading, setLoading } = useSpinner();
 
   async function createDoc() {
-    const user_id = session?.user.id;
-
     setLoading(true);
 
-    const res = await createDocument(user_id!);
+    const res = await createDocument();
 
     if (res.ok) {
-      const { document } = await res.json();
-
       toast.success("Document created");
-      setDocuments([...documents, document]);
+      PubSub.publish("refresh-documents-list");
     } else {
       toast.error("Failed to create document");
     }

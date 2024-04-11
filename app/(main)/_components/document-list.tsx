@@ -13,6 +13,8 @@ import { useState, useEffect } from "react";
 import { getDocuments } from "@/routes/documents";
 // types
 import { Document } from "@/types/document";
+// utils
+import PubSub from "pubsub-js";
 
 interface DocumentListProps {
     parentDocumentId?: string;
@@ -26,6 +28,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
 }) => {
     const params = useParams();
     const router = useRouter();
+
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
     const [documents, setDocuments] = useState<Document[]>();
 
@@ -50,6 +53,12 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
     useEffect(() => {
         getDoc(parentDocumentId);
+
+        const refreshToken = PubSub.subscribe("refresh-documents-list", () => getDoc(parentDocumentId));
+
+        return () => {
+            PubSub.unsubscribe(refreshToken);
+        };
     }, []);
 
     if (!documents) {
@@ -70,7 +79,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
         <div className="flex flex-col">
             <p
                 style={{
-                    paddingLeft: level ? `${(level * 12) + 25}px` : undefined
+                    paddingLeft: level ? `${(level * 12) + 25}px` : `12px`
                 }}
                 className={cn(
                     "hidden text-sm font-medium text-muted-foreground/80",

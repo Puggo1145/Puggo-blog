@@ -14,7 +14,11 @@ export const getDocuments = async (
 }
 
 export const createDocument = async (
-    user_id: string
-) => await POST("/api/documents", {
-    body: JSON.stringify({ user_id })
-});
+    parentDocument?: string
+) => {
+    if (!parentDocument) {
+        return await POST("/api/documents")
+    }
+
+    return await POST(`/api/documents?parentDocument=${parentDocument}`)
+};
