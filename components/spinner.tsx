@@ -25,13 +25,18 @@ interface SpinnerProps extends VariantProps<typeof spinnerVariants> {
     className?: string;
 }
 
-const useSpinner = () => {
+const useSpinner = (
+    { loadingBydefault = false }: { loadingBydefault?: boolean } = {}
+) => {
 
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(() => loadingBydefault);
 
     const Spinner = ({ size, className }: SpinnerProps) => {
         return (
-            loading && <Loader className={cn(spinnerVariants({ size }), className)} />
+            loading &&
+            <Loader
+                className={cn(spinnerVariants({ size }), className)}
+            />
         );
     }
 

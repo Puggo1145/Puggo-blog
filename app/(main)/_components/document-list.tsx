@@ -87,7 +87,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
                     level === 0 && "hidden"
                 )}
             >
-                No pages inside
+                No pages
             </p>
             {
                 documents.map(doc => {

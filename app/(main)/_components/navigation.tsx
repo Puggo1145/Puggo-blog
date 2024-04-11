@@ -6,14 +6,21 @@ import {
     MenuIcon,
     PlusCircle,
     Search,
-    Settings
+    Settings,
+    Trash
 } from "lucide-react";
+import { 
+    Popover,
+    PopoverTrigger,
+    PopoverContent
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 // components
 import UserItem from "./user-item";
 import Item from "./item";
 import DocumentList from "./document-list";
+import TrashBox from "./trash-box";
 // hooks
 import {
     ElementRef,
@@ -166,6 +173,20 @@ const Navigation: React.FC = () => {
                 {/* Documents */}
                 <section className="mt-4">
                     <DocumentList />
+                    <Popover>
+                        <PopoverTrigger className="w-full mt-4">
+                            <Item 
+                                label="Trash"
+                                icon={Trash}
+                            />
+                        </PopoverTrigger>
+                        <PopoverContent
+                            side={isMobile ? "bottom" : "right"}
+                            className="p-0 w-72"
+                        >
+                            <TrashBox />
+                        </PopoverContent>
+                    </Popover>
                 </section>
 
                 <div
