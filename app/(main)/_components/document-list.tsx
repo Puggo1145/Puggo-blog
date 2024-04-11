@@ -9,7 +9,6 @@ import Item from "./item";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import useDocuments from "@/stores/documents";
 // apis
 import { getDocuments } from "@/routes/documents";
 // types
@@ -28,7 +27,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
     const params = useParams();
     const router = useRouter();
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-    const {documents, setDocuments} = useDocuments();
+    const [documents, setDocuments] = useState<Document[]>();
 
     const onExpand = (documentId: string) => {
         setExpanded(prevExpanded => ({

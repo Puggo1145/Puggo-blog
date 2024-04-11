@@ -3,6 +3,8 @@
 import { cn } from "@/lib/utils";
 import { ChevronDown, ChevronRight, type LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+// types
+import { MouseEvent } from "react";
 
 interface Props {
     id?: string;
@@ -26,9 +28,14 @@ const Item = ({
     documentIcon,
     isSearch,
     level = 0,
-    // onExpand,
+    onExpand,
     expanded,
 }: Props) => {
+    const handleExpand = (event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+        event.stopPropagation();
+        onExpand?.();
+    }
+
     const ChevronIcon = expanded ? ChevronDown : ChevronRight;
 
     return (
@@ -49,7 +56,7 @@ const Item = ({
                 <div
                     role="button"
                     className="h-full rounded-sm hover:bg-neutral-300 dark:bg-neutral-600 mr-1"
-                    onClick={() => { }}
+                    onClick={handleExpand}
                 >
                     <ChevronIcon
                         className="size-4 shrink-0 text-muted-foreground/50"
