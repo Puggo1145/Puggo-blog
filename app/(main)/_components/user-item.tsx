@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { useSession, signOut } from "next-auth/react";
 
 const UserItem: React.FC = () => {
-
     const { data } = useSession();
 
     return (

@@ -9,8 +9,8 @@ import Item from "./item";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-// apis
-import { getDocuments } from "@/routes/documents";
+// server actions
+import { getDocuments } from "@/actions/documents/actions";
 // types
 import { Document } from "@/types/document";
 // utils
@@ -39,11 +39,11 @@ const DocumentList: React.FC<DocumentListProps> = ({
         }))
     };
 
-    const getDoc = async (parentDocumentId?: string | null) => {
+    const getDoc = async (parentDocumentId: string | null) => {
         const res = await getDocuments(parentDocumentId);
-        if (res.ok) {
-            const documents = await res.json();
-            setDocuments(documents);
+
+        if (res?.ok) {
+            setDocuments(JSON.parse(res.documents!));
         }
     };
 

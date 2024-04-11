@@ -29,12 +29,11 @@ import { z } from "zod";
 
 import { signIn } from "next-auth/react";
 import { toast } from 'sonner'
-
+// hooks
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-// apis
-import { checkUser } from "@/routes/auth";
+// server actions
+import { checkUser } from "@/actions/auth/actions";
 
 const FormSchema = z.object({
     username: z.string().min(2, {
@@ -64,11 +63,12 @@ const Login: React.FC = () => {
         if (!doesUserExists) {
             setLoading(true);
 
-            const checkUserRes = await checkUser(data.username);
+            const res = await checkUser(data.username);
 
-            const { onResgister } = await checkUserRes.json();
-
-            if (onResgister) {
+            if (res?.error) {
+                setLoading(false);
+                return toast.error(res.error);
+            } else if (res?.onRegister) {
                 setLoading(false);
 
                 return setDoesUserExists(true);

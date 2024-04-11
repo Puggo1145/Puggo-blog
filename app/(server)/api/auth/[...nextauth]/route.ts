@@ -1,6 +1,8 @@
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
+// server action
+import { loginAndRegister } from "@/actions/auth/actions";
 
 export const authOptions: AuthOptions = {
     secret: process.env.SECRET,
@@ -13,17 +15,13 @@ export const authOptions: AuthOptions = {
                 password: { label: 'Password', type: 'password' }
             },
             async authorize(credentials) {
-                const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/login`, {
-                    method: 'POST',
-                    body: JSON.stringify(credentials),
-                    headers: { "Content-Type": "application/json" }
-                });
+                const res = await loginAndRegister(credentials!);
 
-                if (res.status === 201 || res.status === 200) {
-                    const user = await res.json();
+                if (res?.ok) {
+                    const user = await res.user;
 
                     return {
-                        id: user._id,
+                        id: user.id,
                         name: user.username,
                         image: user.avatar
                     };

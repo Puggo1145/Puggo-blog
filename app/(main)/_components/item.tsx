@@ -2,18 +2,29 @@
 
 import { cn } from "@/lib/utils";
 import { 
+    DropdownMenu,
+    DropdownMenuTrigger,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { 
     type LucideIcon,
     ChevronDown, 
     ChevronRight, 
     Plus,
+    Trash,
+    MoreHorizontal
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 // hooks
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 // utils
 import { toast } from "sonner";
-// apis
-import { createDocument } from "@/routes/documents";
+// server actions
+import { createDocument } from "@/actions/documents/actions";
+import { archiveDocuments } from "@/actions/documents/actions";
 
 interface Props {
     id?: string; // parent document id
@@ -41,7 +52,7 @@ const Item = ({
     expanded,
 }: Props) => {
     const router = useRouter();
-
+    const { data: session } = useSession();
 
     const handleExpand = (event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
         event.stopPropagation();
@@ -54,8 +65,8 @@ const Item = ({
         if (!id) return;
 
         const res = await createDocument(id);
-        if (res.ok) {
-            const documentId = await res.json();
+        if (res?.message === "success") {
+            const documentId = res.documentId;
 
             if (!expanded) onExpand?.()
 
@@ -64,6 +75,21 @@ const Item = ({
             toast.success("Document created");
         } else {
             toast.error("Failed to create document");
+        }
+    }
+
+    const archive = async (event: React.MouseEvent<HTMLDivElement, globalThis.MouseEvent>) => {
+        event.stopPropagation();
+
+        if (!id) return;
+
+        const res = await archiveDocuments(id);
+
+        if (res?.message) {
+            PubSub.publish("refresh-documents-list");
+            toast.success(res.message);
+        } else if (res?.error) {
+            toast.error(res.error);
         }
     }
 
@@ -115,6 +141,35 @@ const Item = ({
             )}
             {id && (
                 <div className="ml-auto flex items-center gap-x-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            onClick={e => e.stopPropagation()}
+                            asChild
+                        >
+                            <div
+                                role="button"
+                                className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm
+                                hover:bg-neutral-300 dark:hover:bg-neutral-600"
+                            >
+                                <MoreHorizontal className="size-4 text-muted-foreground" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className="w-60"
+                            align="start"
+                            side="right"
+                            forceMount
+                        >
+                            <DropdownMenuItem onClick={archive}>
+                                <Trash className="size-4 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <div className="text-xs text-muted-foreground p-2">
+                                Last edited by: {session?.user.name}
+                            </div>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <div 
                         role="button"
                         onClick={onCreate}

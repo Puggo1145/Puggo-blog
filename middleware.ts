@@ -16,6 +16,5 @@ export default withAuth(
 export const config = {
     matcher: [
         '/documents',
-        '/api/documents'
     ]
 }

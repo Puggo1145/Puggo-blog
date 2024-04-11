@@ -1,12 +1,12 @@
 "use client"
 
 // shadcn components
-import { 
-    ChevronsLeft, 
-    MenuIcon, 
-    PlusCircle, 
-    Search, 
-    Settings 
+import {
+    ChevronsLeft,
+    MenuIcon,
+    PlusCircle,
+    Search,
+    Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -23,18 +23,22 @@ import {
 } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
-// apis
-import { createDocument } from "@/routes/documents";
+// utils
+import PubSub from "pubsub-js";
+// server actions
+import { createDocument } from "@/actions/documents/actions";
 
 const Navigation: React.FC = () => {
-    // Fn - get documents
     async function createDoc() {
-        const res = await createDocument()
-
-        if (res.ok) {
-            PubSub.publish("refresh-documents-list");
-            toast.success("document created");
-        }
+        const promise = createDocument()
+        toast.promise(promise, {
+            loading: "Creating document...",
+            success: () => {
+                PubSub.publish("refresh-documents-list");
+                return "Document created"
+            },
+            error: "Failed to create document"
+        })
     }
 
     // Fn - navigation bar collapse
@@ -145,12 +149,12 @@ const Navigation: React.FC = () => {
                         label="Search"
                         icon={Search}
                         isSearch
-                        onClick={() => {}}
+                        onClick={() => { }}
                     />
                     <Item
                         label="Settings"
                         icon={Settings}
-                        onClick={() => {}}
+                        onClick={() => { }}
                     />
                     <Item
                         label="New Page"

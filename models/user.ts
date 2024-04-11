@@ -8,7 +8,8 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: false
+        required: false,
+        select: false
     },
     avatar: {
         type: String,

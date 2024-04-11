@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import useSpinner from "@/components/spinner";
 import { toast } from "sonner";
-// apis
-import { createDocument } from "@/routes/documents";
+// server actions
+import { createDocument } from "@/actions/documents/actions";
 // utils
 import PubSub from "pubsub-js";
 
@@ -16,17 +16,19 @@ const DocumentsPage: React.FC = () => {
   async function createDoc() {
     setLoading(true);
 
-    const res = await createDocument();
-
-    if (res.ok) {
-      toast.success("Document created");
-      PubSub.publish("refresh-documents-list");
-    } else {
-      toast.error("Failed to create document");
-    }
-
-    setLoading(false);
-  }
+    const promise = createDocument()
+    toast.promise(promise, {
+        success: () => {
+            setLoading(false);
+            PubSub.publish("refresh-documents-list");
+            return "Document created"
+        },
+        error: () => {
+          setLoading(false);
+          return "Failed to create document"
+        }
+    })
+}
 
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">
