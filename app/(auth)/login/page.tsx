@@ -1,5 +1,6 @@
 "use client"
 
+// UI
 import {
     Card,
     CardContent,
@@ -16,65 +17,50 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { GitHubLogoIcon } from '@radix-ui/react-icons'
+// components
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Separator from "@/components/separator";
-import { GitHubLogoIcon } from '@radix-ui/react-icons'
 import useSpinner from "@/components/spinner";
-import RegisterCheckDialog from "./_components/register-check-dialog";
-
+// zod
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { signIn } from "next-auth/react";
+// utils
 import { toast } from 'sonner'
 // hooks
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-// server actions
-import { checkUser } from "@/actions/auth/actions";
+import { useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useEffect } from "react";
+// schema
+import { LoginSchema } from "@/constants/zodSchema/auth";
 
-const FormSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters long"
-    }),
-    password: z.string().min(8, {
-        message: "Password must be at least 8 characters long"
-    })
-})
 
 const Login: React.FC = () => {
 
     const router = useRouter();
+    const { data: session } = useSession();
     const { loading, setLoading, Spinner } = useSpinner();
-    const [doesUserExists, setDoesUserExists] = useState(false);
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    // redirect if user is already logged in
+    useEffect(() => {
+        if (session?.user.id) {
+            router.replace("/");
+        }
+    }, [session]);
+    
+
+    const form = useForm<z.infer<typeof LoginSchema>>({
+        resolver: zodResolver(LoginSchema),
         defaultValues: {
             username: "",
             password: ""
         }
     });
 
-    async function onSubmit(data: z.infer<typeof FormSchema>) {
-        // 检查 User 是否存在
-        if (!doesUserExists) {
-            setLoading(true);
-
-            const res = await checkUser(data.username);
-
-            if (res?.error) {
-                setLoading(false);
-                return toast.error(res.error);
-            } else if (res?.onRegister) {
-                setLoading(false);
-
-                return setDoesUserExists(true);
-            }
-        }
-
+    async function onSubmit(data: z.infer<typeof LoginSchema>) {
         const { username, password } = data;
 
         setLoading(true);
@@ -86,7 +72,7 @@ const Login: React.FC = () => {
 
         if (res?.ok) {
             toast.success("Logged in successfully");
-            router.push("/");
+            router.replace("/");
         } else {
             toast.error("Invalid username or password");
             form.setError("password", { message: "Invalid username or password" });
@@ -98,8 +84,6 @@ const Login: React.FC = () => {
 
     return (
         <div className="h-full flex items-center justify-center">
-            <RegisterCheckDialog open={doesUserExists} />
-
             <Card className="w-[350px] border-none shadow-none">
                 <CardHeader>
                     <CardTitle>Log in</CardTitle>

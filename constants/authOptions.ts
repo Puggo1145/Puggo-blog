@@ -17,7 +17,7 @@ const authOptions: AuthOptions = {
                 const res = await loginAndRegister(credentials!);
 
                 if (res?.ok) {
-                    const user = await res.user;
+                    const user = res.user;
 
                     return {
                         id: user.id,
