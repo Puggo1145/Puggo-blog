@@ -87,6 +87,7 @@ const Item = ({
 
         if (res?.message) {
             PubSub.publish("refresh-documents-list");
+            router.replace("/documents");
             toast.success(res.message);
         } else if (res?.error) {
             toast.error(res.error);

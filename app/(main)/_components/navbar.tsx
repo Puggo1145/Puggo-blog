@@ -4,6 +4,9 @@
 import { MenuIcon } from "lucide-react";
 // server action
 import { getById } from "@/actions/documents/actions";
+// components
+import Banner from "./banner";
+import Menu from "./menu";
 // hooks
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -45,9 +48,12 @@ const Navbar: React.FC<NavbarProps> = ({
     if (document === undefined) {
         return (
             <nav className="bg-background dark:bg-[#1f1f1f] px-3 py-2 w-full
-                flex items-center gap-x-4"
+                flex items-center justify-between gap-x-4"
             >
                 <Title.Skeleton />
+                <div className="flex items-center gap-x-2">
+                    <Menu.Skeleton />
+                </div>
             </nav>
         )
     }
@@ -57,21 +63,30 @@ const Navbar: React.FC<NavbarProps> = ({
     }
 
     return (
-        <nav className="
+        <>
+            <nav className="
             bg-background dark:bg-[#1f1f1f] px-3 py-2 w-full
             flex items-center gap-x-4"
-        >
-            {isCollapsed && (
-                <MenuIcon
-                    role="button"
-                    onClick={onResetWidth}
-                    className="size-6 text-muted-foreground"
-                />
-            )}
-            <div className="flex items-center justify-between w-full">
-                <Title initialData={document}></Title>
-            </div>
-        </nav>
+            >
+                {isCollapsed && (
+                    <MenuIcon
+                        role="button"
+                        onClick={onResetWidth}
+                        className="size-6 text-muted-foreground"
+                    />
+                )}
+                <div className="flex items-center justify-between w-full">
+                    <Title initialData={document} />
+                    <div className="flex items-center gap-x-2">
+                        <Menu documentId={document._id} />
+                    </div>
+                </div>
+            </nav>
+            {
+                document.isArchived &&
+                <Banner documentId={document._id}></Banner>
+            }
+        </>
     );
 };
 

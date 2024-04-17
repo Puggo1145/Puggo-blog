@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
             disableTransitionOnChange
             storageKey="notion-theme-2"
           >
-            <Toaster position="top-center" />
+            <Toaster position="top-right" />
             <ModalProvider />
             {children}
           </ThemeProvider>
