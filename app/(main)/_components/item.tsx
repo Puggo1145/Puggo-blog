@@ -70,7 +70,7 @@ const Item = ({
 
             if (!expanded) onExpand?.()
 
-            // router.push(`/documents/${documentId}`);
+            router.push(`/documents/${documentId}`);
             PubSub.publish("refresh-documents-list");            
             toast.success("Document created");
         } else {

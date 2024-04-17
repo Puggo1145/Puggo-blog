@@ -1,5 +1,4 @@
 import { Schema, model, models } from "mongoose";
-import type { Document } from "@/types/document";
 
 const documentSchema = new Schema({
     title: {
@@ -44,5 +43,5 @@ const documentSchema = new Schema({
 documentSchema.index({ user_id: 1, parentDocument: 1 });
 
 
-const Document = models.Document || model("Document", documentSchema);
-export default Document;
+const DocumentModel = models.Document || model("Document", documentSchema);
+export default DocumentModel;

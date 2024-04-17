@@ -3,10 +3,11 @@
 import connectToDB from "@/utils/database";
 import { getServerSession } from "next-auth/next";
 import authOptions from "@/constants/authOptions";
-
-import Document from "@/models/document";
-
 import { revalidatePath } from "next/cache";
+
+import DocumentModel from "@/models/document";
+
+import type { Document } from "@/types/document";
 
 export const getDocuments = async (
     parentDocument?: string | null
@@ -16,7 +17,7 @@ export const getDocuments = async (
 
         const session = await getServerSession(authOptions);
 
-        const documents = await Document
+        const documents = await DocumentModel
             .find({
                 user_id: session?.user.id,
                 parentDocument,
@@ -30,9 +31,9 @@ export const getDocuments = async (
         }
     } catch (err) {
         if (err instanceof Error) {
-            return { 
+            return {
                 ok: false,
-                message: "fail" 
+                message: "fail"
             };
         }
     }
@@ -46,14 +47,14 @@ export const createDocument = async (
 
         const session = await getServerSession(authOptions);
 
-        const document = await Document.create({
+        const document = await DocumentModel.create({
             parentDocument,
             user_id: session?.user.id
         }) as Document;
 
         revalidatePath("/documents");
 
-        return { 
+        return {
             message: "success",
             documentId: document._id.toString()
         };
@@ -70,7 +71,7 @@ export const archiveDocuments = async (
     try {
         await connectToDB();
 
-        const document = await Document.findById(documentId) as Document;
+        const document = await DocumentModel.findById(documentId) as Document;
         if (!document) {
             return { error: "Document not found" };
         }
@@ -83,7 +84,7 @@ export const archiveDocuments = async (
 
         // 递归查找该文档下是否有子文档，并一并 archive 子文档，直到没有子文档为止
         const recursiveArchive = async (documentId: string) => {
-            const children = await Document.find({
+            const children = await DocumentModel.find({
                 user_id: session?.user.id,
                 parentDocument: documentId
             }) as Document[];
@@ -92,13 +93,13 @@ export const archiveDocuments = async (
             if (children.length === 0) return;
 
             for (const child of children) {
-                await Document.findByIdAndUpdate(child._id, { isArchived: true });
+                await DocumentModel.findByIdAndUpdate(child._id, { isArchived: true });
 
                 await recursiveArchive(child._id);
             }
         };
 
-        await Document.findByIdAndUpdate(documentId, { isArchived: true });
+        await DocumentModel.findByIdAndUpdate(documentId, { isArchived: true });
         await recursiveArchive(documentId!);
 
         revalidatePath("/documents");
@@ -117,7 +118,7 @@ export const getTrash = async () => {
 
         const session = await getServerSession(authOptions);
 
-        const documents = await Document
+        const documents = await DocumentModel
             .find({
                 user_id: session?.user.id,
                 isArchived: true
@@ -130,9 +131,9 @@ export const getTrash = async () => {
         }
     } catch (err) {
         if (err instanceof Error) {
-            return { 
+            return {
                 ok: false,
-                message: "fail" 
+                message: "fail"
             };
         }
     }
@@ -144,7 +145,7 @@ export const restoreDocument = async (
     try {
         await connectToDB();
 
-        const document = await Document
+        const document = await DocumentModel
             .findById(documentId) as Document;
         if (!document) {
             return { error: "Document not found" };
@@ -158,7 +159,7 @@ export const restoreDocument = async (
 
         // 递归查找该文档下是否有子文档，并一并 restore 子文档，直到没有子文档为止
         const recursiveRestore = async (documentId: string) => {
-            const children = await Document.find({
+            const children = await DocumentModel.find({
                 user_id: session?.user.id,
                 parentDocument: documentId
             }) as Document[];
@@ -167,13 +168,13 @@ export const restoreDocument = async (
             if (children.length === 0) return;
 
             for (const child of children) {
-                await Document.findByIdAndUpdate(child._id, { isArchived: false });
+                await DocumentModel.findByIdAndUpdate(child._id, { isArchived: false });
 
                 await recursiveRestore(child._id);
             }
         };
 
-        await Document.findByIdAndUpdate(documentId, { isArchived: false });
+        await DocumentModel.findByIdAndUpdate(documentId, { isArchived: false });
         await recursiveRestore(documentId!);
 
         revalidatePath("/documents");
@@ -192,7 +193,7 @@ export const removeDocument = async (
     try {
         await connectToDB();
 
-        const document = await Document
+        const document = await DocumentModel
             .findById(documentId) as Document;
         if (!document) {
             return { error: "Document not found" };
@@ -206,7 +207,7 @@ export const removeDocument = async (
 
         // 递归查找该文档下是否有子文档，并一并删除子文档，直到没有子文档为止
         const recursiveRemove = async (documentId: string) => {
-            const children = await Document.find({
+            const children = await DocumentModel.find({
                 user_id: session?.user.id,
                 parentDocument: documentId
             }) as Document[];
@@ -215,13 +216,13 @@ export const removeDocument = async (
             if (children.length === 0) return;
 
             for (const child of children) {
-                await Document.findByIdAndDelete(child._id);
+                await DocumentModel.findByIdAndDelete(child._id);
 
                 await recursiveRemove(child._id);
             }
         };
 
-        await Document.findByIdAndDelete(documentId);
+        await DocumentModel.findByIdAndDelete(documentId);
         await recursiveRemove(documentId!);
 
         revalidatePath("/documents");
@@ -232,5 +233,74 @@ export const removeDocument = async (
         if (err instanceof Error) {
             return { message: "fail" };
         }
+    }
+}
+
+export const getById = async (documentId: string) => {
+    try {
+        await connectToDB();
+
+        const session = await getServerSession(authOptions);
+
+        const document = await DocumentModel.findById(documentId) as Document;
+        if (!document) return { error: "Document not found" };
+
+        // 如果文档是公开的且未删除，所有人可见
+        if (document.isPublished && !document.isArchived) {
+            return {
+                ok: true,
+                document: JSON.stringify(document)
+            };
+        }
+        // 如果文档是私有的，只有创建者可见
+        const user_id = session?.user.id;
+        if (document.user_id.toString() !== user_id) {
+            return { error: "Unauthorized" };
+        }
+
+        return {
+            ok: true,
+            document: JSON.stringify(document)
+        };
+    } catch (err) {
+        if (err instanceof Error) {
+            return { error: "fail: " + err.message };
+        }
+        return { error: "An error occured" };
+    }
+}
+
+export const updateDocument = async (
+    document_id: string,
+    updateBody: {
+        title?: string,
+        content?: string,
+        coverImage?: string,
+        icon?: string,
+        isPublished?: boolean
+    } 
+) => {
+    try {
+        await connectToDB();
+
+        const session = await getServerSession(authOptions);
+        if (!session) return { error: "Unauthorized" };
+
+        const user_id = session.user.id;
+
+        const existingDocument = await DocumentModel.findById(document_id) as Document;
+        if (!existingDocument) return { error: "Document not found" };
+        if (existingDocument.user_id.toString() !== user_id) {
+            return { error: "Unauthorized" };
+        }
+
+        await DocumentModel.findByIdAndUpdate(document_id, updateBody);
+
+        return { ok: true }
+    } catch (err) {
+        if (err instanceof Error) {
+            return { error: "fail: " + err.message };
+        }
+        return { error: "An error occured" };
     }
 }

@@ -55,9 +55,25 @@ const DocumentList: React.FC<DocumentListProps> = ({
         getDoc(parentDocumentId);
 
         const refreshToken = PubSub.subscribe("refresh-documents-list", () => getDoc(parentDocumentId));
+        const updateToken = PubSub.subscribe("document-updated", (_, data: { _id: string, title: string }) => {
+            setDocuments(prevDocs => {
+                if (prevDocs) {
+                    return prevDocs.map(doc => {
+                        if (doc._id === data._id) {
+                            return {
+                                ...doc,
+                                title: data.title
+                            }
+                        }
+                        return doc;
+                    });
+                }
+            });
+        });
 
         return () => {
             PubSub.unsubscribe(refreshToken);
+            PubSub.unsubscribe(updateToken);
         };
     }, []);
 
