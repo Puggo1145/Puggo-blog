@@ -127,7 +127,7 @@ const TrashBox: React.FC = () => {
                             <div
                                 onClick={e => onRestore(e, document._id)}
                                 role="button"
-                                className="rounded-sm p-2 hover:bg-neutral-200"
+                                className="rounded-sm p-2 hover:bg-foreground/30"
                             >
                                 <Undo className="size-4 text-muted-foreground" />
                             </div>
@@ -136,7 +136,7 @@ const TrashBox: React.FC = () => {
                             >
                                 <div
                                     role="button"
-                                    className="rounded-sm p-2 hover:bg-neutral-200"
+                                    className="rounded-sm p-2 hover:bg-foreground/30"
                                 >
                                     <Trash className="size-4 text-muted-foreground" />
                                 </div>

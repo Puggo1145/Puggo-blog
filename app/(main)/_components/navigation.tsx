@@ -30,13 +30,30 @@ import {
 } from "react";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
+// stores
 import { useSearch } from "@/stores/useSearch";
+import { useSettings } from "@/stores/useSettings";
 // utils
 import PubSub from "pubsub-js";
 // server actions
 import { createDocument } from "@/actions/documents/actions";
 
 const Navigation: React.FC = () => {
+    const { onOpen } = useSearch();
+    const settings = useSettings();
+    
+    // Fn - navigation bar collapse
+    const pathname = usePathname();
+    const isMobile = useMediaQuery("(max-width: 768px)");
+    
+    const isResizingRef = useRef(false);
+    const sidebarRef = useRef<ElementRef<"aside">>(null);
+    const navbarRef = useRef<ElementRef<"div">>(null);
+    
+    const [isResetting, setIsResetting] = useState(false); // 鼠标按住缩放条时，标识是否正在进行缩放操作
+    const [isCollapsed, setIsCollapsed] = useState(isMobile); // 根据设备屏幕尺寸判断是否折叠侧边栏
+    
+
     async function createDoc() {
         const promise = createDocument()
         toast.promise(promise, {
@@ -48,18 +65,6 @@ const Navigation: React.FC = () => {
             error: "Failed to create document"
         })
     }
-
-    // Fn - navigation bar collapse
-    const pathname = usePathname();
-    const isMobile = useMediaQuery("(max-width: 768px)");
-    const { onOpen } = useSearch();
-
-    const isResizingRef = useRef(false);
-    const sidebarRef = useRef<ElementRef<"aside">>(null);
-    const navbarRef = useRef<ElementRef<"div">>(null);
-
-    const [isResetting, setIsResetting] = useState(false); // 鼠标按住缩放条时，标识是否正在进行缩放操作
-    const [isCollapsed, setIsCollapsed] = useState(isMobile); // 根据设备屏幕尺寸判断是否折叠侧边栏
 
     // 屏幕宽度变化时，自动折叠侧边栏
     useEffect(() => {
@@ -163,7 +168,7 @@ const Navigation: React.FC = () => {
                     <Item
                         label="Settings"
                         icon={Settings}
-                        onClick={() => { }}
+                        onClick={settings.onOpen}
                     />
                     <Item
                         label="New Page"
