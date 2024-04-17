@@ -1,15 +1,13 @@
-import { Schema } from "mongoose";
-
 export interface Document {
-    _id: string & Schema.Types.ObjectId;
-    user_id: string & Schema.Types.ObjectId;
+    _id: string;
+    user_id: string;
 
     title: string;
     isArchived: boolean;
-    parentDocument?: string;
-    content?: string;
-    coverImage?: string;
-    icon?: string;
+    parentDocument?: string | null;
+    content?: string | null;
+    coverImage?: string | null;
+    icon?: string | null;
     isPublished: boolean;
 
     createdAt: string;

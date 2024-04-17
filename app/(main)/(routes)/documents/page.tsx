@@ -18,17 +18,17 @@ const DocumentsPage: React.FC = () => {
 
     const promise = createDocument()
     toast.promise(promise, {
-        success: () => {
-            setLoading(false);
-            PubSub.publish("refresh-documents-list");
-            return "Document created"
-        },
-        error: () => {
-          setLoading(false);
-          return "Failed to create document"
-        }
+      success: () => {
+        setLoading(false);
+        PubSub.publish("refresh-documents-list");
+        return "Document created"
+      },
+      error: () => {
+        setLoading(false);
+        return "Failed to create document"
+      }
     })
-}
+  }
 
   return (
     <div className="h-full flex flex-col items-center justify-center space-y-4">

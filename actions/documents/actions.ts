@@ -304,3 +304,25 @@ export const updateDocument = async (
         return { error: "An error occured" };
     }
 }
+
+export const removeIcon = async (document_id: string) => {
+    try {
+        await connectToDB();
+
+        const session = await getServerSession(authOptions);
+        if (!session) return { error: "Unauthorized" };
+
+        const existingDocument = await DocumentModel.findById(document_id) as Document;
+        if (!existingDocument) return { error: "Document not found" };
+        if (existingDocument.user_id.toString() !== session.user.id) return { error: "Unauthorized" };
+
+        await DocumentModel.findByIdAndUpdate(document_id, { icon: null });
+
+        return { ok: true };
+    } catch (err) {
+        if (err instanceof Error) {
+            return { error: "fail: " + err.message };
+        }
+        return { error: "An error occured" };
+    }
+}

@@ -11,10 +11,13 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 // server actions
 import { getDocuments } from "@/actions/documents/actions";
-// types
-import { Document } from "@/types/document";
 // utils
 import PubSub from "pubsub-js";
+// stores
+import useDocument from "@/stores/useDocument";
+// types
+import { Document } from "@/types/document";
+
 
 interface DocumentListProps {
     parentDocumentId?: string;
@@ -31,6 +34,7 @@ const DocumentList: React.FC<DocumentListProps> = ({
 
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
     const [documents, setDocuments] = useState<Document[]>();
+    const { document } = useDocument();
 
     const onExpand = (documentId: string) => {
         setExpanded(prevExpanded => ({
@@ -55,27 +59,27 @@ const DocumentList: React.FC<DocumentListProps> = ({
         getDoc(parentDocumentId);
 
         const refreshToken = PubSub.subscribe("refresh-documents-list", () => getDoc(parentDocumentId));
-        const updateToken = PubSub.subscribe("document-updated", (_, data: { _id: string, title: string }) => {
+
+        return () => {
+            PubSub.unsubscribe(refreshToken);
+        };
+    }, []);
+
+    // 追踪并接管当前打开 document 的更新
+    useEffect(() => {
+        if (document._id) {
             setDocuments(prevDocs => {
                 if (prevDocs) {
                     return prevDocs.map(doc => {
-                        if (doc._id === data._id) {
-                            return {
-                                ...doc,
-                                title: data.title
-                            }
+                        if (doc._id === document._id) {
+                            return document;
                         }
                         return doc;
                     });
                 }
             });
-        });
-
-        return () => {
-            PubSub.unsubscribe(refreshToken);
-            PubSub.unsubscribe(updateToken);
-        };
-    }, []);
+        }
+    }, [document])
 
     if (!documents) {
         return (

@@ -9,12 +9,12 @@ import Banner from "./banner";
 import Menu from "./menu";
 // hooks
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 // utils
 import { toast } from "sonner";
 import Title from "./title";
-// types
-import type { Document } from "@/types/document";
+// stores
+import useDocument from "@/stores/useDocument";
 
 interface NavbarProps {
     isCollapsed: boolean;
@@ -26,12 +26,10 @@ const Navbar: React.FC<NavbarProps> = ({
     onResetWidth
 }) => {
     const params = useParams();
-
-    const [document, setDocument] = useState<Document>();
+    const { document, setDocument } = useDocument();
 
     // 监听 id 变更，更新 document
     useEffect(() => {
-        setDocument(undefined);
         getDocument();
     }, [params.documentId]);
 
@@ -45,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({
     }
 
 
-    if (document === undefined) {
+    if (document._id === '') {
         return (
             <nav className="bg-background dark:bg-[#1f1f1f] px-3 py-2 w-full
                 flex items-center justify-between gap-x-4"
@@ -76,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({
                     />
                 )}
                 <div className="flex items-center justify-between w-full">
-                    <Title initialData={document} />
+                    <Title />
                     <div className="flex items-center gap-x-2">
                         <Menu documentId={document._id} />
                     </div>

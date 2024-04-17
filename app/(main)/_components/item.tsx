@@ -28,7 +28,7 @@ import { archiveDocuments } from "@/actions/documents/actions";
 
 interface Props {
     id?: string; // parent document id
-    documentIcon?: string;
+    documentIcon?: string | null;
     active?: boolean;
     expanded?: boolean;
     isSearch?: boolean;
@@ -122,7 +122,7 @@ const Item = ({
                 </div>
             )}
             {documentIcon ? (
-                <div>
+                <div className="shrink-0 h-[18px] mr-2 text-muted-foreground">
                     {documentIcon}
                 </div>
             ) : (
