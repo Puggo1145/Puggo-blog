@@ -255,7 +255,7 @@ export const getById = async (documentId: string) => {
         // 如果文档是私有的，只有创建者可见
         const user_id = session?.user.id;
         if (document.user_id.toString() !== user_id) {
-            return { error: "Unauthorized" };
+            throw new Error("Unauthorized");
         }
 
         return {
@@ -264,7 +264,7 @@ export const getById = async (documentId: string) => {
         };
     } catch (err) {
         if (err instanceof Error) {
-            return { error: "fail: " + err.message };
+            throw new Error(err.message);
         }
         return { error: "An error occured" };
     }

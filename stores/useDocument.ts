@@ -9,6 +9,7 @@ type Action = {
     setDocument: (document: Document) => void;
     resetDocument: () => void;
     setCoverImage: (coverImage: string | null) => void;
+    setPublish: (isPublished: boolean) => void;
 }
 
 const useDocument = create<State & Action>()((set) => ({
@@ -38,6 +39,12 @@ const useDocument = create<State & Action>()((set) => ({
         set((state) => ({
             ...state,
             document: { ...state.document, coverImage }
+        }));
+    },
+    setPublish: (isPublished: boolean) => {
+        set((state) => ({
+            ...state,
+            document: { ...state.document, isPublished }
         }));
     }
 }));

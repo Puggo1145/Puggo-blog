@@ -20,7 +20,7 @@ import { Skeleton } from "./ui/skeleton";
 
 interface CoverProps {
     url: string | null;
-    preview: boolean;
+    preview?: boolean;
 }
 
 const Cover = ({ url, preview }: CoverProps) => {

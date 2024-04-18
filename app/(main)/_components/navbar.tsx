@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import Title from "./title";
 // stores
 import useDocument from "@/stores/useDocument";
+import Publish from "./publish";
 
 interface NavbarProps {
     isCollapsed: boolean;
@@ -75,12 +76,13 @@ const Navbar: React.FC<NavbarProps> = ({
                 )}
                 <div className="flex items-center justify-between w-full">
                     <Title />
-                    {
-                        !document.isArchived &&
-                        <div className="flex items-center gap-x-2">
+                    <div className="flex items-center gap-x-2">
+                        <Publish initialData={document} />
+                        {
+                            !document.isArchived &&
                             <Menu documentId={document._id} />
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
             </nav>
             {

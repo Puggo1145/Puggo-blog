@@ -1,22 +1,17 @@
 "use client"
 
 // hooks
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 // utils
-import { toast } from "sonner";
 import dynamic from "next/dynamic";
 // server action
 import { getById } from "@/actions/documents/actions";
-// components
-import useSpinner from "@/components/spinner";
 // stores
 import useDocument from "@/stores/useDocument";
 // types
 import Toolbar from "@/components/tool-bar";
 import Cover from "@/components/cover";
 import { Skeleton } from "@/components/ui/skeleton";
-// server actions
-import { updateDocument } from "@/actions/documents/actions";
 
 interface DocumentDetailPageProps {
     params: {
@@ -30,8 +25,6 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
     const Editor = useMemo(() => dynamic(() => import("@/components/editor"), { ssr: false }), []);
 
     const { document, setDocument, resetDocument } = useDocument();
-    const { loading, setLoading, Spinner } = useSpinner();
-    const timer = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         getDocDetail();
@@ -46,19 +39,6 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
         if (res.ok) {
             setDocument(JSON.parse(res.document));
         }
-    };
-
-    const onChange = async (content: string) => {
-        if (timer.current) return;
-
-        setLoading(true);
-        timer.current = setTimeout(async () => {
-            const res = await updateDocument(documentId, { content: content });
-            if (res.error) toast.error(res.error);
-            
-            timer.current = null;
-            setLoading(false);
-        }, 2000);
     };
 
     if (document._id === '') {
@@ -83,18 +63,15 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
 
     return (
         <div className="pt-[52px] pb-40">
-            {
-                loading &&
-                <div className="z-50 fixed top-3 right-[200px] text-muted-foreground flex items-center gap-x-2">
-                    <Spinner />
-                    saving...
-                </div>
-            }
-            <Cover url={document.coverImage!} />
+            <Cover
+                preview
+                url={document.coverImage!}
+            />
             <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
-                <Toolbar />
+                <Toolbar preview />
                 <Editor
-                    onChange={onChange}
+                    editable={false}
+                    onChange={() => {}}
                     initialContent={document.content!}
                 />
             </div>
