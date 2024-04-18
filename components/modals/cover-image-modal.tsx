@@ -39,10 +39,16 @@ const CoverImageModal: React.FC = () => {
             setIsSubmiting(true);
             setFile(file);
 
-            const res = await edgestore.publicFiles.upload({ file });
+            const res = await edgestore.publicFiles.upload({
+                file,
+                options: {
+                    replaceTargetUrl: coverImage.url
+                }
+            });
+
             setCoverImage(res.url);
             await updateDocument(documentId as string, { coverImage: res.url });
-
+            
             onClose();
         }
     }
@@ -57,7 +63,7 @@ const CoverImageModal: React.FC = () => {
                     </DialogTitle>
                     <DialogDescription>Upload a cover image for your profile</DialogDescription>
                 </DialogHeader>
-                <SingleImageDropzone 
+                <SingleImageDropzone
                     className="w-full outline-none"
                     disabled={isSubmiting}
                     value={file}

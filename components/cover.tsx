@@ -8,9 +8,12 @@ import { Button } from "./ui/button";
 import { ImageIcon, X } from "lucide-react";
 // hooks
 import { useParams } from "next/navigation";
+import { useEdgeStore } from "@/lib/edgestore";
 // stores
 import { useCoverImage } from "@/stores/use-cover-image";
 import useDocument from "@/stores/useDocument";
+// utils
+import { toast } from "sonner";
 // server action
 import { updateDocument } from "@/actions/documents/actions";
 
@@ -20,15 +23,25 @@ interface CoverProps {
 }
 
 const Cover: React.FC<CoverProps> = ({ url, preview }) => {
-    const { documentId }  = useParams();
+    const { documentId } = useParams();
     const coverImage = useCoverImage();
     const { setCoverImage } = useDocument();
-    
+    const { edgestore } = useEdgeStore();
+
     const onRemove = async () => {
-        await updateDocument(documentId as string, { coverImage: null });
+        if (!url) return;
+
+        // instantly remove cover in UI
         setCoverImage(null);
+        try {
+            await edgestore.publicFiles.delete({ url });
+            await updateDocument(documentId as string, { coverImage: null });
+            toast.success("Cover image removed");
+        } catch (err) {
+            toast.error("Failed to remove cover image");
+        }
     }
-    
+
     return (
         <div className={cn(
             "relative w-full h-[35vh] group",
@@ -51,7 +64,7 @@ const Cover: React.FC<CoverProps> = ({ url, preview }) => {
                     flex items-center gap-x-2"
                 >
                     <Button
-                        onClick={coverImage.onOpen}
+                        onClick={() => coverImage.onReplace(url)}
                         className="text-muted-foreground text-xs"
                         variant="outline"
                         size="sm"
