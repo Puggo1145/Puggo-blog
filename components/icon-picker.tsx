@@ -20,7 +20,6 @@ interface IconPickerProps {
 const IconPicker: React.FC<IconPickerProps> = ({
     onChange,
     children,
-    asChild
 }) => {
     const { resolvedTheme } = useTheme();
     const currentTheme = useMemo(() => {
