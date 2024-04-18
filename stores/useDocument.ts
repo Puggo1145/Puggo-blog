@@ -7,6 +7,7 @@ type State = {
 
 type Action = {
     setDocument: (document: Document) => void;
+    setCoverImage: (coverImage: string | null) => void;
 }
 
 const useDocument = create<State & Action>()((set) => ({
@@ -29,6 +30,12 @@ const useDocument = create<State & Action>()((set) => ({
     setDocument: (document: Document) => {
         set({ document })
     },
+    setCoverImage: (coverImage: string | null) => {
+        set((state) => ({ 
+            ...state, 
+            document: { ...state.document, coverImage } 
+        }));
+    }
 }));
 
 export default useDocument;

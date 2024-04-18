@@ -7,6 +7,7 @@ import SessionProvider from "@/components/providers/session-provider";
 import { getServerSession } from "next-auth";
 import { Toaster } from "sonner";
 import ModalProvider from "@/components/providers/modal-provider";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -37,17 +38,19 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <SessionProvider session={session!}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            storageKey="notion-theme-2"
-          >
-            <Toaster position="top-right" />
-            <ModalProvider />
-            {children}
-          </ThemeProvider>
+          <EdgeStoreProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              storageKey="notion-theme-2"
+            >
+              <Toaster position="top-right" />
+              <ModalProvider />
+              {children}
+            </ThemeProvider>
+          </EdgeStoreProvider>
         </SessionProvider>
       </body>
     </html>

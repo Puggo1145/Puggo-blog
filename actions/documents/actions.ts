@@ -274,9 +274,9 @@ export const updateDocument = async (
     document_id: string,
     updateBody: {
         title?: string,
-        content?: string,
-        coverImage?: string,
-        icon?: string,
+        content?: string | null,
+        coverImage?: string | null,
+        icon?: string | null,
         isPublished?: boolean
     } 
 ) => {

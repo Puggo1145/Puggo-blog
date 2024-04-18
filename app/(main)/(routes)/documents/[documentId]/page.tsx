@@ -10,6 +10,7 @@ import { getById } from "@/actions/documents/actions";
 import useDocument from "@/stores/useDocument";
 // types
 import Toolbar from "@/components/tool-bar";
+import Cover from "@/components/cover";
 
 interface DocumentDetailPageProps {
     params: {
@@ -49,7 +50,10 @@ const DocumentDetailPage: React.FC<DocumentDetailPageProps> = ({
         <div
             className="pb-40"
         >
-            <div className="h-[35vh]" />
+            <Cover 
+                url={document.coverImage!}
+                preview={false}
+            />
             <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
                 <Toolbar /> 
             </div>

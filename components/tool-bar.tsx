@@ -20,6 +20,7 @@ import {
 import { toast } from "sonner";
 // stores
 import useDocument from "@/stores/useDocument";
+import { useCoverImage } from "@/stores/use-cover-image";
 
 interface ToolbarProps {
   preview?: boolean;
@@ -28,6 +29,8 @@ interface ToolbarProps {
 const Toolbar: React.FC<ToolbarProps> = ({
   preview
 }) => {
+  const coverImage = useCoverImage();
+
   const { document, setDocument } = useDocument();
   const inputRef = useRef<React.ElementRef<"textarea">>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -115,6 +118,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             className="text-muted-foreground text-xs"
             variant="outline"
             size="sm"
+            onClick={coverImage.onOpen}
           >
             <ImageIcon className="size-4 mr-2" />
             Add cover
