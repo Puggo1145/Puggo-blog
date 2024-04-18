@@ -29,6 +29,7 @@ import {
     useState,
     useEffect,
 } from "react";
+import { useRouter } from "next/navigation";
 import { useMediaQuery } from "usehooks-ts";
 import { usePathname } from "next/navigation";
 import { useParams } from "next/navigation";
@@ -41,6 +42,8 @@ import PubSub from "pubsub-js";
 import { createDocument } from "@/actions/documents/actions";
 
 const Navigation: React.FC = () => {
+    const router = useRouter();
+
     const { onOpen } = useSearch();
     const settings = useSettings();
 
@@ -61,7 +64,8 @@ const Navigation: React.FC = () => {
         const promise = createDocument()
         toast.promise(promise, {
             loading: "Creating document...",
-            success: () => {
+            success: (res) => {
+                router.push(`/documents/${res?.documentId}`)
                 PubSub.publish("refresh-documents-list");
                 return "Document created"
             },
@@ -222,9 +226,7 @@ const Navigation: React.FC = () => {
                             <Navbar
                                 isCollapsed={isCollapsed}
                                 onResetWidth={resetWidth}
-                            >
-
-                            </Navbar>
+                            />
                         )
                         :
                         (

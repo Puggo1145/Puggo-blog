@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
 import useSpinner from "@/components/spinner";
 import { toast } from "sonner";
+// hooks
+import { useRouter } from "next/navigation";
 // server actions
 import { createDocument } from "@/actions/documents/actions";
 // utils
@@ -12,14 +14,16 @@ import PubSub from "pubsub-js";
 
 const DocumentsPage: React.FC = () => {
   const { Spinner, loading, setLoading } = useSpinner();
+  const router = useRouter();
 
   async function createDoc() {
     setLoading(true);
 
     const promise = createDocument()
     toast.promise(promise, {
-      success: () => {
+      success: (res) => {
         setLoading(false);
+        router.push(`/documents/${res?.documentId}`);
         PubSub.publish("refresh-documents-list");
         return "Document created"
       },

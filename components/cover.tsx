@@ -16,13 +16,14 @@ import useDocument from "@/stores/useDocument";
 import { toast } from "sonner";
 // server action
 import { updateDocument } from "@/actions/documents/actions";
+import { Skeleton } from "./ui/skeleton";
 
 interface CoverProps {
     url: string | null;
     preview: boolean;
 }
 
-const Cover: React.FC<CoverProps> = ({ url, preview }) => {
+const Cover = ({ url, preview }: CoverProps) => {
     const { documentId } = useParams();
     const coverImage = useCoverImage();
     const { setCoverImage } = useDocument();
@@ -86,5 +87,11 @@ const Cover: React.FC<CoverProps> = ({ url, preview }) => {
         </div>
     );
 };
+
+Cover.Skeleton = function CoverSkeleton() {
+    return (
+        <Skeleton className="w-full h-[12vh]" />
+    );
+}
 
 export default Cover;

@@ -29,7 +29,7 @@ const Title = () => {
     const disableInput = async () => {
         setIsEditing(false);
         const res = await updateDocument(document._id, {
-            title: document.title || "Untitled"
+            title: document.title
         });
 
         if (res.error) toast.error(res.error);
@@ -53,7 +53,7 @@ const Title = () => {
                             onClick={enableInput}
                             onBlur={disableInput}
                             value={document.title}
-                            onChange={(event) => setDocument({ ...document, title: event.target.value })}
+                            onChange={(event) => setDocument({ ...document, title: event.target.value || "untitled" })}
                             onKeyDown={onKeyDown}
                             className="h-7 px-2 focus-visible:ring-transparent"
                         />
@@ -66,7 +66,7 @@ const Title = () => {
                             size="sm"
                             className="font-normal h-auto p-1"
                         >
-                            {document.title || "Untitled"}
+                            {document.title}
                         </Button>
                     )
             }

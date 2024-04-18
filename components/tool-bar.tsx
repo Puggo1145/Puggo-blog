@@ -132,7 +132,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
             onBlur={diableInput}
             onKeyDown={onKeydown}
             value={document.title}
-            onChange={(e) => setDocument({ ...document, title: e.target.value })}
+            onChange={(e) => setDocument({ ...document, title: e.target.value || "untitled" })}
             className="text-5xl bg-transparent font-bold break-words outline-none text-[#3F3F3F] dark:text-[#CFCFCF] resize-none"
           />
           :

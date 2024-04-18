@@ -75,14 +75,17 @@ const Navbar: React.FC<NavbarProps> = ({
                 )}
                 <div className="flex items-center justify-between w-full">
                     <Title />
-                    <div className="flex items-center gap-x-2">
-                        <Menu documentId={document._id} />
-                    </div>
+                    {
+                        !document.isArchived &&
+                        <div className="flex items-center gap-x-2">
+                            <Menu documentId={document._id} />
+                        </div>
+                    }
                 </div>
             </nav>
             {
                 document.isArchived &&
-                <Banner documentId={document._id}></Banner>
+                <Banner documentId={document._id} />
             }
         </>
     );

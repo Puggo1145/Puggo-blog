@@ -10,6 +10,8 @@
     "addui": "shadcn-ui add"
   },
   "dependencies": {
+    "@blocknote/core": "^0.12.4",
+    "@blocknote/react": "^0.12.4",
     "@edgestore/react": "^0.1.6",
     "@edgestore/server": "^0.1.6",
     "@hookform/resolvers": "^3.3.4",
