@@ -13,6 +13,11 @@ export const loginAndRegister = async (
     { username, password }: Record<"username" | "password", string>
 ) => {
     try {
+        console.log("url: " + process.env.NEXTAUTH_URL);
+        console.log("secret: " + process.env.NEXTAUTH_SECRET);
+        console.log("mongo: " + process.env.MONGODB_URI);
+        
+
         await connectToDB();
 
         // validate
